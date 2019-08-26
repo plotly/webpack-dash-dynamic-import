@@ -1,9 +1,14 @@
 const resolveImportSource = `\
 Object.defineProperty(__webpack_require__, 'p', {
     get: (function () {
-        /* Do not take into account async and inline scripts */
-        const scripts = Array.from(document.getElementsByTagName('script')).filter(function(s) { return !s.async && !s.text && !s.textContent; });
-        const script = scripts.slice(-1)[0];
+        let script = document.currentScript;
+        if (!script) {
+            /* Shim for IE11 and below */
+            /* Do not take into account async scripts and inline scripts */
+            console.log('using shim');
+            const scripts = Array.from(document.getElementsByTagName('script')).filter(function(s) { return !s.async && !s.text && !s.textContent; });
+            script = scripts.slice(-1)[0];
+        }
 
         var url = script.src.split('/').slice(0, -1).join('/') + '/';
 
